@@ -1,0 +1,6 @@
+pluginclassname=OpenstreetmapEmbedder
+pluginname=OpenstreetmapEmbedder
+origin=data-quest
+version=0.1
+studipMinVersion=2.3
+studipMaxVersion=2.666
