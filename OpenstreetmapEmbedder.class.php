@@ -32,7 +32,17 @@ class OpenstreetmapEmbedder extends StudIPPlugin implements SystemPlugin {
         $width > 0 || $width = 400;
         $height = floor($width * 3 / 4);
         
-        list($latitude, $longitude, $zoom) = explode(";", $adress);
+        list($latitude, $longitude, $zoom, $marker_text) = explode(";", $adress);
+        
+        if ($marker_text) {
+            $marker = 'var marker = new khtml.maplib.overlay.Marker({
+                    position: new khtml.maplib.LatLng('.(double) $latitude.','.(double) $longitude.'),
+                    map: map'.
+                    ($marker_text ? ', title:"'.htmlReady($marker_text).'"' : "") .'
+            });
+            map.addOverlay(marker);';
+        }
+        
         $output = sprintf(
                 '<style>#%s > div:not(:first-child) {display: none;} </style>'.
                 '<div id="%s" style="width: %spx; height: %spx; border: 1px solid black;"></div>' .
@@ -42,6 +52,7 @@ class OpenstreetmapEmbedder extends StudIPPlugin implements SystemPlugin {
                     map.centerAndZoom(new khtml.maplib.LatLng(%s,%s),%s);
                     var zoombar=new khtml.maplib.ui.Zoombar();
                     map.addOverlay(zoombar);
+                    %s
                 });
                 </script>',
             $id,
@@ -51,7 +62,8 @@ class OpenstreetmapEmbedder extends StudIPPlugin implements SystemPlugin {
             $id,
             (double) $latitude,
             (double) $longitude,
-            (int) $zoom
+            (int) $zoom,
+            $marker
         );
         return str_replace("\n", "", $output);
     }
